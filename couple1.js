@@ -83,6 +83,9 @@ function pullAction() {
     pull();
 }
 
+// 自動移動的速度
+let autoMoveSpeed = 2;
+
 // 滑鼠點擊來勾住第二個圓圈
 canvas.addEventListener('click', () => {
     if (!circle1.isPulling) {
@@ -103,7 +106,20 @@ function update() {
     if (circle1.isPulling) {
         circle1.x += circle1.dx;
         circle2.x += circle2.dx; // 更新第二個圓圈的位置
+    } else {
+        // 自動移動
+        circle1.x += autoMoveSpeed;
+        circle2.x -= autoMoveSpeed;
+
+        // 碰到邊界反彈
+        if (circle1.x + circle1.radius > canvas.width || circle1.x - circle1.radius < 0) {
+            autoMoveSpeed = -autoMoveSpeed;
+        }
+        if (circle2.x + circle2.radius > canvas.width || circle2.x - circle2.radius < 0) {
+            autoMoveSpeed = -autoMoveSpeed;
+        }
     }
+
     // 更新並畫出手和圓圈
     updateHand();
     drawHand();
@@ -112,7 +128,6 @@ function update() {
 
     requestAnimationFrame(update);
 }
-
 // 開始遊戲循環
 update();
 
