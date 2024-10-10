@@ -62,12 +62,15 @@ function pullAction() {
         if (currentIteration < iterations) {
             // 往右拉
             circle1.dx = pullDistance;
+            circle2.dx = pullDistance; // 讓第二個圓圈也跟著移動
             setTimeout(() => {
                 // 往左拉
                 circle1.dx = -pullDistance;
+                circle2.dx = -pullDistance; // 讓第二個圓圈也跟著移動
                 setTimeout(() => {
                     // 回到原點
                     circle1.dx = 0;
+                    circle2.dx = 0; // 讓第二個圓圈也回到原點
                     currentIteration++;
                     pull(); // 再次執行動作
                 }, 500);
@@ -99,8 +102,8 @@ function update() {
     // 更新位置
     if (circle1.isPulling) {
         circle1.x += circle1.dx;
+        circle2.x += circle2.dx; // 更新第二個圓圈的位置
     }
-
     // 更新並畫出手和圓圈
     updateHand();
     drawHand();
@@ -112,3 +115,4 @@ function update() {
 
 // 開始遊戲循環
 update();
+
