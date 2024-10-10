@@ -57,23 +57,27 @@ function pullAction() {
     let pullDistance = 10; // 拉扯的距離
     let iterations = 3; // 重複動作次數
     let currentIteration = 0;
+    let pullingLeft = true; // 初始為左邊的圈拉右邊的圈
     
     function pull() {
         if (currentIteration < iterations) {
-            // 往右拉
-            circle1.dx = pullDistance;
-            circle2.dx = pullDistance; // 讓第二個圓圈也跟著移動
-            setTimeout(() => {
-                // 往左拉
+            if (pullingLeft) {
+                // 左邊的圈往左拉右邊的圈
                 circle1.dx = -pullDistance;
-                circle2.dx = -pullDistance; // 讓第二個圓圈也跟著移動
-                setTimeout(() => {
-                    // 回到原點
-                    circle1.dx = 0;
-                    circle2.dx = 0; // 讓第二個圓圈也回到原點
-                    currentIteration++;
-                    pull(); // 再次執行動作
-                }, 500);
+                circle2.dx = -pullDistance;
+            } else {
+                // 右邊的圈往右拉左邊的圈
+                circle1.dx = pullDistance;
+                circle2.dx = pullDistance;
+            }
+            
+            setTimeout(() => {
+                // 回到原點
+                circle1.dx = 0;
+                circle2.dx = 0;
+                pullingLeft = !pullingLeft; // 交換拉扯方向
+                currentIteration++;
+                setTimeout(pull, 500); // 再次執行動作
             }, 500);
         } else {
             // 結束拉扯動作
