@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>手拉手遊戲</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 圓圈的屬性
+        let circle1 = {
+            x: 250,
+            y: 200,
+            radius: 0,
+            color: 'red',
+            dx: 0
+        };
+
+        let circle2 = {
+            x: 350,
+            y: 200,
+            radius: 0,
+            color: 'green',
+            dx: 0
+        };
+
+        let handLength = 0;
+        let pullDistance = 2;
+        let iterations = 3;
+        let currentIteration = 0;
+        let pullingLeft = true;
+        let tiredTextCount = 0;
+        let familyTextCount = 0;
+
+        // 畫出圓圈
+        function drawCircle(circle) {
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+            ctx.fillStyle = circle.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // 畫出手
+        function drawHand(circle, direction) {
+            ctx.beginPath();
+            ctx.moveTo(circle.x, circle.y);
+            if (direction === 'right') {
+                ctx.lineTo(circle.x + handLength, circle.y);
+            } else {
+                ctx.lineTo(circle.x - handLength, circle.y);
+            }
+            ctx.strokeStyle = circle.color;
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        // 畫出文字
+        function drawText(text, x, y) {
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.fillText(text, x, y);
+        }
+
+        // 當圓圈勾住後進行拉扯的動作
+        function pullAction() {
+            function pull() {
+                if (currentIteration < iterations) {
+                    if (pullingLeft) {
+                        circle1.dx = -pullDistance;
+                        circle2.dx = -pullDistance;
+                    } else {
+                        circle1.dx = pullDistance;
+                        circle2.dx = pullDistance;
+                    }
+
+                    let targetX = pullingLeft ? 50 : 550;
+                    let interval = setInterval(() => {
+                        circle1.x += circle1.dx;
+                        circle2.x += circle2.dx;
+                        if ((pullingLeft && circle1.x <= targetX) || (!pullingLeft && circle1.x >= targetX)) {
+                            clearInterval(interval);
+                            circle1.dx = 0;
+                            circle2.dx = 0;
+                            pullingLeft = !pullingLeft;
+                            currentIteration++;
+                            setTimeout(pull, 500);
+                        }
+                    }, 20);
+                }
+            }
+            pull();
+        }
+
+        // 遊戲主循環
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 畫出圓圈和手
+            drawCircle(circle1);
+            drawHand(circle1, 'right');
+            drawCircle(circle2);
+            drawHand(circle2, 'left');
+
+            // 畫出文字
+            for (let i = 0; i < tiredTextCount; i++) {
+                drawText('我好累', circle1.x - 10, circle1.y - 50 - i * 20);
+            }
+            for (let i = 0; i < familyTextCount; i++) {
+                drawText('我要養家', circle2.x - 10, circle2.y - 50 - i * 20);
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // 開始遊戲循環
+        update();
+
+        // 圓圈和手的出現動畫
+        function appearAnimation() {
+            let interval = setInterval(() => {
+                if (circle1.radius < 30) {
+                    circle1.radius += 1;
+                } else if (tiredTextCount < 3) {
+                    tiredTextCount++;
+                } else if (handLength < 50) {
+                    handLength += 2;
+                } else if (circle2.radius < 30) {
+                    circle2.radius += 1;
+                } else if (familyTextCount < 3) {
+                    familyTextCount++;
+                } else if (handLength < 100) {
+                    handLength += 2;
+                } else {
+                    clearInterval(interval);
+                    pullAction();
+                }
+            }, 50);
+        }
+
+        // 開始出現動畫
+        appearAnimation();
+    </script>
+</body>
+</html>
