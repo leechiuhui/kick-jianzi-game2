@@ -6,7 +6,7 @@ let circle1 = {
     x: 150,
     y: 200,
     radius: 30,
-    color: 'green',
+    color: 'yellow',
     isPulling: false,
     dx: 0
 };
